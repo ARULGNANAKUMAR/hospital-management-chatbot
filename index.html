@@ -1,58 +1,564 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Hospital Chatbot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏥 Smart Hospital Management System</title>
     <style>
-        body { font-family: Arial; margin: 0; padding: 20px; background: #f0f8ff; }
-        .chat-container { max-width: 600px; margin: auto; background: white; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .chat-box { height: 400px; border: 1px solid #ddd; margin-bottom: 10px; padding: 10px; overflow-y: auto; }
-        .user-msg { text-align: right; color: blue; margin: 5px 0; }
-        .bot-msg { text-align: left; color: green; margin: 5px 0; }
-        input { width: 70%; padding: 8px; }
-        button { padding: 8px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Login Section */
+        .login-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .login-form {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            width: 100%;
+        }
+
+        .demo-btn {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        /* Main App */
+        .app-section {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .user-info {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            padding: 20px;
+        }
+
+        .chat-box {
+            height: 400px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: #3498db;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .bot-message {
+            background: #ecf0f1;
+            color: #333;
+            margin-right: auto;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .chat-input button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .success { color: #27ae60; }
+        .error { color: #e74c3c; }
+        .info { color: #3498db; }
+
+        /* Demo Accounts */
+        .demo-accounts {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <h2>🏥 Hospital HelpBot</h2>
-        <div class="chat-box" id="chatBox"></div>
-        <div>
-            <input type="text" id="userInput" placeholder="Type your message...">
-            <button onclick="sendMessage()">Send</button>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏥 Smart Hospital Management System</h1>
+            <p>AI-Powered Healthcare Assistant</p>
+        </div>
+
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <h2>Welcome Back!</h2>
+            <p>Please login to continue</p>
+            
+            <div class="login-form">
+                <div class="form-group">
+                    <label>User Type:</label>
+                    <select id="userType" onchange="toggleLoginFields()">
+                        <option value="admin">Administrator</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="nurse">Nurse</option>
+                        <option value="patient">Patient</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Username/ID:</label>
+                    <input type="text" id="username" placeholder="Enter username or ID">
+                </div>
+                
+                <div class="form-group" id="passwordGroup">
+                    <label>Password:</label>
+                    <input type="password" id="password" placeholder="Enter password">
+                </div>
+
+                <button class="btn" onclick="login()">Login</button>
+                <button class="btn demo-btn" onclick="showDemoAccounts()">Show Demo Accounts</button>
+
+                <div id="demoAccounts" class="demo-accounts" style="display: none;">
+                    <h4>Demo Login Credentials:</h4>
+                    <p><strong>Admin:</strong> Username: arul, Password: arul</p>
+                    <p><strong>Doctor:</strong> Username: doc_raj, Password: doctor123</p>
+                    <p><strong>Nurse:</strong> Username: nurse_priya, Password: nurse123</p>
+                    <p><strong>Patient:</strong> Username: patient_ram, Password: patient123</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Application -->
+        <div id="appSection" class="app-section">
+            <!-- User Info -->
+            <div class="user-info">
+                <div class="user-details">
+                    Welcome, <span id="userDisplayName">User</span> | 
+                    Role: <span id="userRole">Role</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="chat-container">
+                <h2>💬 AI Healthcare Assistant</h2>
+                <p>Ask me about hospital services, appointments, doctors, emergencies, etc.</p>
+                
+                <div class="chat-box" id="chatBox">
+                    <div class="message bot-message">
+                        <strong>MediBot:</strong> Hello! I'm your healthcare assistant. How can I help you today?
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="userInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn" onclick="quickAction('appointment')">📅 Book Appointment</button>
+                    <button class="btn" onclick="quickAction('doctor')">👨‍⚕️ Find Doctor</button>
+                    <button class="btn" onclick="quickAction('emergency')">🚨 Emergency</button>
+                    <button class="btn" onclick="quickAction('location')">📍 Location</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const chatBox = document.getElementById('chatBox');
-            const userText = input.value;
+        // Configuration
+        const BACKEND_URL = 'https://hospital-backend.onrender.com';
+        
+        let currentUser = null;
+        let chatHistory = [];
 
-            if (!userText) return;
+        // User credentials database
+        const userDatabase = {
+            admin: [
+                { username: 'arul', password: 'arul', name: 'Arul Gnanakumar', role: 'admin' }
+            ],
+            doctor: [
+                { username: 'doc_raj', password: 'doctor123', name: 'Dr. Raj Kumar', role: 'doctor', specialization: 'Cardiology' },
+                { username: 'doc_priya', password: 'doctor123', name: 'Dr. Priya Sharma', role: 'doctor', specialization: 'Neurology' }
+            ],
+            nurse: [
+                { username: 'nurse_priya', password: 'nurse123', name: 'Nurse Priya', role: 'nurse', department: 'General Ward' },
+                { username: 'nurse_anita', password: 'nurse123', name: 'Nurse Anita', role: 'nurse', department: 'ICU' }
+            ],
+            patient: [
+                { username: 'patient_ram', password: 'patient123', name: 'Ramesh Kumar', role: 'patient', condition: 'Hypertension' },
+                { username: 'patient_sita', password: 'patient123', name: 'Sita Raman', role: 'patient', condition: 'Migraine' }
+            ]
+        };
 
-            // User message display
-            chatBox.innerHTML += `<div class="user-msg"><strong>You:</strong> ${userText}</div>`;
-            input.value = '';
+        // Hospital data for chatbot
+        const hospitalData = {
+            doctors: [
+                { name: 'Dr. Raj Kumar', specialization: 'Cardiology', experience: '10 years', availability: 'Mon, Wed, Fri' },
+                { name: 'Dr. Priya Sharma', specialization: 'Neurology', experience: '8 years', availability: 'Tue, Thu, Sat' },
+                { name: 'Dr. Amit Patel', specialization: 'Orthopedics', experience: '12 years', availability: 'Mon, Tue, Fri' },
+                { name: 'Dr. Sunita Reddy', specialization: 'Pediatrics', experience: '9 years', availability: 'Wed, Thu, Sat' }
+            ],
+            departments: [
+                'Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'General Medicine',
+                'Emergency', 'ICU', 'Radiology', 'Pathology', 'Physiotherapy'
+            ],
+            services: [
+                'Emergency & Trauma Care',
+                'Cardiac Surgery',
+                'Neuro Surgery', 
+                'Joint Replacement',
+                'Child Healthcare',
+                'Diagnostic Services',
+                'Pharmacy',
+                'Ambulance Service'
+            ],
+            appointments: [
+                { time: '10:00 AM', available: true },
+                { time: '11:00 AM', available: false },
+                { time: '12:00 PM', available: true },
+                { time: '2:00 PM', available: true },
+                { time: '3:00 PM', available: true },
+                { time: '4:00 PM', available: false }
+            ]
+        };
 
-            // Bot response
-            try {
-                const response = await fetch('http://localhost:8000/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: userText })
-                });
-                const data = await response.json();
-                chatBox.innerHTML += `<div class="bot-msg"><strong>Bot:</strong> ${data.response}</div>`;
-            } catch (error) {
-                chatBox.innerHTML += `<div class="bot-msg"><strong>Bot:</strong> Sorry, service unavailable</div>`;
+        // Toggle login fields based on user type
+        function toggleLoginFields() {
+            const userType = document.getElementById('userType').value;
+            const passwordGroup = document.getElementById('passwordGroup');
+            
+            // All users need password in this system
+            passwordGroup.style.display = 'block';
+            
+            // Set placeholder based on user type
+            const usernameInput = document.getElementById('username');
+            if (userType === 'admin') {
+                usernameInput.placeholder = 'Enter admin username';
+            } else if (userType === 'doctor') {
+                usernameInput.placeholder = 'Enter doctor ID';
+            } else if (userType === 'nurse') {
+                usernameInput.placeholder = 'Enter nurse ID';
+            } else {
+                usernameInput.placeholder = 'Enter patient ID';
             }
+        }
+
+        // Show demo accounts
+        function showDemoAccounts() {
+            const demoDiv = document.getElementById('demoAccounts');
+            demoDiv.style.display = demoDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Login function
+        function login() {
+            const userType = document.getElementById('userType').value;
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                alert('Please enter both username and password');
+                return;
+            }
+
+            // Check credentials
+            const users = userDatabase[userType];
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                showApp();
+            } else {
+                alert('Invalid credentials! Please check username and password.');
+            }
+        }
+
+        // Show main application
+        function showApp() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('appSection').style.display = 'block';
+            
+            // Update user info
+            document.getElementById('userDisplayName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.role;
+            
+            // Add welcome message to chat
+            addBotMessage(`Welcome, ${currentUser.name}! I'm MediBot, your healthcare assistant. How can I help you today?`);
+        }
+
+        // Logout function
+        function logout() {
+            currentUser = null;
+            document.getElementById('appSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+            
+            // Reset form
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('demoAccounts').style.display = 'none';
+            
+            // Clear chat
+            document.getElementById('chatBox').innerHTML = 
+                '<div class="message bot-message"><strong>MediBot:</strong> Hello! I\'m your healthcare assistant. How can I help you today?</div>';
+        }
+
+        // Chat functionality
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function addUserMessage(message) {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div class="message user-message"><strong>You:</strong> ${message}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Enter key support
-        document.getElementById('userInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendMessage();
-        });
+        function addBotMessage(message) {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div class="message bot-message"><strong>MediBot:</strong> ${message}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addUserMessage(message);
+            input.value = '';
+
+            // Generate AI response
+            setTimeout(() => {
+                const response = generateAIResponse(message);
+                addBotMessage(response);
+            }, 500);
+        }
+
+        // Enhanced AI Response Generator
+        function generateAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            // Greetings
+            if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+                return `Hello ${currentUser.name}! 👋 How can I assist you with healthcare services today?`;
+            }
+
+            // Appointments
+            if (message.includes('appointment') || message.includes('book') || message.includes('schedule')) {
+                const availableSlots = hospitalData.appointments.filter(slot => slot.available).slice(0, 3);
+                let slotsText = availableSlots.map(slot => slot.time).join(', ');
+                
+                return `📅 **Appointment Booking**\n\nAvailable slots today: ${slotsText}\n\nTo book:\n• Call: 044-1234567\n• Online: www.cityhospital.com/book\n• Emergency walk-in available\n\nWould you like me to help you schedule an appointment?`;
+            }
+
+            // Doctors
+            if (message.includes('doctor') || message.includes('specialist') || message.includes('cardiologist') || message.includes('neurologist')) {
+                let doctorsList = hospitalData.doctors.map(doc => 
+                    `• ${doc.name} - ${doc.specialization} (${doc.experience}) - Available: ${doc.availability}`
+                ).join('\n');
+                
+                return `👨‍⚕️ **Our Medical Experts**\n\n${doctorsList}\n\n**Departments Available:**\n${hospitalData.departments.join(', ')}\n\nWhich specialist would you like to consult?`;
+            }
+
+            // Emergency
+            if (message.includes('emergency') || message.includes('urgent') || message.includes('accident')) {
+                return `🚨 **Emergency Services**\n\n• Emergency Hotline: 108 or 044-1234567\n• Ambulance: 24/7 available\n• Emergency Ward: Always open\n• Trauma Center: Fully equipped\n• Quick response: <5 minutes\n\n**Please proceed directly to emergency ward for immediate care!**`;
+            }
+
+            // Location
+            if (message.includes('location') || message.includes('address') || message.includes('where')) {
+                return `📍 **Hospital Location**\n\nCity Multi-Speciality Hospital\nNo. 123, Medical College Road\nAnna Nagar, Chennai - 600040\n\n**Landmarks:**\n• Near Central Metro Station\n• Opposite City Mall\n• Next to Police Station\n\n**Google Maps:** https://maps.app.goo.gl/hospital`;
+            }
+
+            // Timings
+            if (message.includes('time') || message.includes('timing') || message.includes('open') || message.includes('close')) {
+                return `⏰ **Hospital Timings**\n\n• Emergency Services: 24/7\n• OPD Consultation: 8:00 AM - 8:00 PM\n• Pharmacy: 7:00 AM - 11:00 PM\n• Lab Services: 6:00 AM - 10:00 PM\n• Visiting Hours: 4:00 PM - 7:00 PM\n• Ambulance: 24/7 available`;
+            }
+
+            // Services
+            if (message.includes('service') || message.includes('facility') || message.includes('treatment')) {
+                return `🏥 **Our Healthcare Services**\n\n${hospitalData.services.join('\n• ')}\n\n**Specialized Treatments:**\n• Cardiac Surgery\n• Neuro Surgery\n• Joint Replacement\n• Cancer Treatment\n• Kidney Transplant\n\nWhich service are you looking for?`;
+            }
+
+            // Contact
+            if (message.includes('contact') || message.includes('phone') || message.includes('number')) {
+                return `📞 **Contact Information**\n\n• Main Line: 044-1234567\n• Emergency: 044-1234568\n• Appointments: 044-1234569\n• Ambulance: 044-1234570\n• Email: info@cityhospital.com\n• Website: www.cityhospital.com\n\nWe're available 24/7 for emergencies!`;
+            }
+
+            // Medicine/Pharmacy
+            if (message.includes('medicine') || message.includes('drug') || message.includes('pharmacy')) {
+                return `💊 **Pharmacy Services**\n\n• 24/7 Pharmacy available\n• All medicines in stock\n• Generic medicines available\n• Prescription required for scheduled drugs\n• Home delivery available\n• Insurance coverage accepted\n\nPharmacy timings: 7:00 AM - 11:00 PM`;
+            }
+
+            // Insurance
+            if (message.includes('insurance') || message.includes('cashless') || message.includes('claim')) {
+                return `💰 **Insurance & Payments**\n\n• Cashless treatment available\n• All major insurers accepted\n• Government schemes supported\n• EMI options available\n• Payment flexibility\n• Paperless claims processing\n\nWe accept all major insurance providers!`;
+            }
+
+            // COVID related
+            if (message.includes('covid') || message.includes('corona') || message.includes('vaccine')) {
+                return `🦠 **COVID-19 Services**\n\n• COVID Testing: 24/7\n• Vaccination Center: 9 AM - 5 PM\n• Isolation Wards Available\n• Teleconsultation for COVID\n• Home Care Services\n• Ambulance with oxygen support\n\nStay safe! Get vaccinated!`;
+            }
+
+            // Role-specific responses
+            if (currentUser.role === 'admin') {
+                if (message.includes('add') || message.includes('create') || message.includes('new')) {
+                    return `⚙️ **Admin Panel Features**\n\nYou can:\n• Add new staff members\n• Manage patient records\n• Generate reports\n• View hospital statistics\n• Manage appointments\n\nUse the admin dashboard for these operations.`;
+                }
+            }
+
+            if (currentUser.role === 'doctor') {
+                if (message.includes('patient') || message.includes('case') || message.includes('treatment')) {
+                    return `👨‍⚕️ **Doctor Dashboard**\n\nAs Dr. ${currentUser.name}, you can:\n• View patient records\n• Write prescriptions\n• Schedule surgeries\n• Check test results\n• Consult with specialists\n\nAccess your doctor portal for patient management.`;
+                }
+            }
+
+            if (currentUser.role === 'nurse') {
+                if (message.includes('patient') || message.includes('care') || message.includes('medication')) {
+                    return `👩‍⚕️ **Nursing Services**\n\nAs Nurse ${currentUser.name}, you can:\n• Monitor patient vitals\n• Administer medications\n• Assist in procedures\n• Patient care coordination\n• Emergency response\n\nCheck the nursing station for patient updates.`;
+                }
+            }
+
+            if (currentUser.role === 'patient') {
+                if (message.includes('my') && (message.includes('report') || message.includes('test') || message.includes('prescription'))) {
+                    return `👤 **Patient Services**\n\nDear ${currentUser.name}, you can:\n• View your medical reports\n• Check prescription details\n• See appointment history\n• Access test results\n• Download health records\n\nVisit patient portal or contact your doctor.`;
+                }
+            }
+
+            // Default responses
+            const defaultResponses = [
+                "I'm here to help with hospital services, appointments, doctor information, emergencies, and healthcare guidance. What specific information do you need?",
+                "I can assist you with appointment booking, doctor details, emergency services, hospital timings, location, and medical information. How can I help you today?",
+                "As your healthcare assistant, I can provide information about our medical services, specialist doctors, appointment scheduling, emergency care, and hospital facilities. What would you like to know?",
+                "I specialize in hospital information, medical services, doctor appointments, emergency guidance, and healthcare support. What do you need assistance with?"
+            ];
+            
+            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        }
+
+        // Quick actions
+        function quickAction(action) {
+            const messages = {
+                'appointment': 'I want to book an appointment',
+                'doctor': 'Show me available doctors',
+                'emergency': 'I need emergency help',
+                'location': 'Where is the hospital located?'
+            };
+            
+            document.getElementById('userInput').value = messages[action];
+            sendMessage();
+        }
+
+        // Initialize
+        toggleLoginFields();
     </script>
 </body>
 </html>
